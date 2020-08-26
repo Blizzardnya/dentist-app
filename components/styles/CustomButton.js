@@ -1,9 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 
-const CustomButton = ({ children, color }) => {
+const CustomButton = ({ children, color, onPress }) => {
   return (
-    <ButtonWrapper color={color}>
+    <ButtonWrapper onPress={onPress} color={color}>
       <ButtonText>{children}</ButtonText>
     </ButtonWrapper>
   )

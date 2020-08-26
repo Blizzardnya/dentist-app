@@ -1,25 +1,27 @@
 import React from 'react'
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 import styled from 'styled-components/native'
 import { useNavigation } from '@react-navigation/native'
 
 import GrayText from './styles/GrayText'
 import Badge from './styles/Badge'
 
+function getRandomColor() {
+  return '#' + Math.random().toString(16).slice(2, 8)
+}
+
 const Appointment = ({ item }) => {
-  const { user, diagnosis, active, time } = item
+  const { patient, diagnosis, active, time } = item
   const navigation = useNavigation()
   const goToPatient = () => navigation.navigate('Patient', item)
 
   return (
     <GroupItem onPress={goToPatient}>
-      <Avatar
-        source={{
-          uri: user.avatar,
-        }}
-      />
+      <Avatar>
+        <Letter>{patient.fullname[0].toUpperCase()}</Letter>
+      </Avatar>
       <View style={{ flex: 1 }}>
-        <FullName>{user.fullname}</FullName>
+        <FullName>{patient.fullname}</FullName>
         <GrayText>{diagnosis}</GrayText>
       </View>
       <Badge active={active}>{time}</Badge>
@@ -32,16 +34,25 @@ Appointment.defaultProps = {
   items: [],
 }
 
+const Letter = styled.Text`
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+`
+
 const FullName = styled.Text`
   font-weight: bold;
   font-size: 16px;
 `
 
-const Avatar = styled.Image`
+const Avatar = styled.View`
+  align-items: center;
+  justify-content: center;
   border-radius: 50px;
   width: 40px;
   height: 40px;
   margin-right: 15px;
+  background-color: ${getRandomColor()};
 `
 
 const GroupItem = styled.TouchableOpacity`

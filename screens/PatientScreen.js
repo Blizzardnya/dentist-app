@@ -6,13 +6,13 @@ import { Foundation, Ionicons } from '@expo/vector-icons'
 import { GrayText, CustomButton, Badge } from '../components/index'
 
 function PatientScreen({ route, navigation }) {
-  const { user, diagnosis } = route.params
+  const { patient, diagnosis, date, time, price } = route.params
 
   return (
     <View style={{ flex: 1 }}>
       <PatientContainer>
-        <PatientFullName>{user.fullname}</PatientFullName>
-        <GrayText>{user.phone}</GrayText>
+        <PatientFullName>{patient.fullname}</PatientFullName>
+        <GrayText>{patient.phone}</GrayText>
 
         <PatientButtons>
           <FormulaButtonView>
@@ -48,10 +48,10 @@ function PatientScreen({ route, navigation }) {
               style={{ marginTop: 15, justifyContent: 'space-between' }}
             >
               <Badge style={{ flex: 1 }} active>
-                11.10.2019 - 15:40
+                {date} - {time}
               </Badge>
               <Badge style={{ marginLeft: 50 }} color="green">
-                1500 P
+                {price} P
               </Badge>
             </AppointmentCardRow>
           </AppointmentCard>

@@ -1,18 +1,41 @@
 import React, { useState, useEffect } from 'react'
-import { SectionList } from 'react-native'
+import { SectionList, TouchableHighlight, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import styled from 'styled-components/native'
-import axios from 'axios'
+import Swipeable from '../components/Swipeable'
 
 import { Appointment, SectionTitle } from '../components/index'
+import { appointmentsApi } from '../utils/api'
 
-const HomeScreen = () => {
+const HomeScreen = ({ route, navigation }) => {
   const [data, setData] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  const goToAddPatient = () => navigation.navigate('AddPatient')
+  const rightButtons = [
+    <TouchableHighlight>
+      <Text>Button 1</Text>
+    </TouchableHighlight>,
+    <TouchableHighlight>
+      <Text>Button 2</Text>
+    </TouchableHighlight>,
+  ]
+
+  const fetchAppointments = () => {
+    setIsLoading(true)
+    appointmentsApi
+      .get()
+      .then(({ data }) => {
+        setData(data.data)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    setIsLoading(false)
+  }
 
   useEffect(() => {
-    axios.get('https://trycode.pw/c/GGS8L.json').then(({ data }) => {
-      setData(data)
-    })
+    fetchAppointments()
   }, [])
 
   return (
@@ -20,14 +43,22 @@ const HomeScreen = () => {
       {data && (
         <SectionList
           sections={data}
-          keyExtractor={(item, index) => index}
-          renderItem={({ item }) => <Appointment item={item} />}
+          keyExtractor={(item) => item._id}
+          refreshing={false}
+          onRefresh={() => {
+            fetchAppointments()
+          }}
+          renderItem={({ item }) => (
+            <Swipeable rightButtons={rightButtons}>
+              <Appointment item={item} />
+            </Swipeable>
+          )}
           renderSectionHeader={({ section: { title } }) => (
             <SectionTitle>{title}</SectionTitle>
           )}
         />
       )}
-      <PlusButton activeOpacity={0.5}>
+      <PlusButton activeOpacity={0.5} onPress={goToAddPatient}>
         <Ionicons name="ios-add" size={32} color="white" />
       </PlusButton>
     </ScheduleContainer>

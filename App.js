@@ -2,7 +2,7 @@ import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 
-import { HomeScreen, PatientScreen } from './screens/index'
+import { HomeScreen, PatientScreen, AddPatientScreen } from './screens/index'
 
 const Stack = createStackNavigator()
 
@@ -24,6 +24,11 @@ function App() {
           name="Patient"
           component={PatientScreen}
           options={{ title: 'Карта пациента', ...headerOptions }}
+        />
+        <Stack.Screen
+          name="AddPatient"
+          component={AddPatientScreen}
+          options={{ title: 'Добавить пациента', ...headerOptions }}
         />
       </Stack.Navigator>
     </NavigationContainer>
