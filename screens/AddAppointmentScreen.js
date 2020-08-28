@@ -17,8 +17,10 @@ import DateTimePicker from 'react-native-modal-datetime-picker'
 import { CustomButton } from '../components'
 import { appointmentsApi } from '../utils/api'
 
-function AddPatientScreen({ route, navigation }) {
-  const [values, setValues] = useState({})
+function AddAppointmentScreen({ route, navigation }) {
+  const [values, setValues] = useState({
+    patient: route.params.patient._id,
+  })
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false)
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false)
 
@@ -49,21 +51,23 @@ function AddPatientScreen({ route, navigation }) {
   const handleConfirmTime = (date) => {
     setValues({
       ...values,
-      time: `${date.getHours()}:${date.getMinutes()}`,
+      time: `${('0' + date.getHours()).slice(-2)}:${(
+        '0' + date.getMinutes()
+      ).slice(-2)}`,
     })
 
     setDatePickerVisibility.bind(false)
   }
 
   const onSubmit = () => {
-    // patientsApi
-    //   .add(values)
-    //   .then(() => {
-    //     navigation.navigate('Home')
-    //   })
-    //   .catch((err) => {
-    //     console.log(err)
-    //   })
+    appointmentsApi
+      .add(values)
+      .then(() => {
+        navigation.goBack()
+      })
+      .catch((err) => {
+        console.log(err, values)
+      })
   }
 
   return (
@@ -121,6 +125,7 @@ function AddPatientScreen({ route, navigation }) {
                   justifyContent: 'center',
                 }}
                 bordered
+                light
                 onPress={setDatePickerVisibility.bind(true)}
               >
                 <Text>{values.date ? values.date : 'Выберите дату'}</Text>
@@ -131,20 +136,21 @@ function AddPatientScreen({ route, navigation }) {
                   justifyContent: 'center',
                 }}
                 bordered
+                light
                 onPress={setTimePickerVisibility.bind(true)}
               >
                 <Text>{values.time ? values.time : 'Выберите время'}</Text>
               </Button>
               <DateTimePicker
-                mode="date"
                 isVisible={isDatePickerVisible}
+                mode="date"
                 display="calendar"
                 onConfirm={handleConfirmDate}
                 onCancel={setDatePickerVisibility.bind(false)}
               />
               <DateTimePicker
-                mode="time"
                 isVisible={isTimePickerVisible}
+                mode="time"
                 is24Hour={true}
                 display="clock"
                 onConfirm={handleConfirmTime}
@@ -168,4 +174,4 @@ const TimeRow = styled.View`
   padding-top: 20px;
 `
 
-export default AddPatientScreen
+export default AddAppointmentScreen

@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, ActivityIndicator, Linking } from 'react-native'
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  Linking,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native'
 import styled from 'styled-components'
 import { Foundation, Ionicons } from '@expo/vector-icons'
 
 import { GrayText, CustomButton, Badge, PlusButton } from '../components/index'
-import { patientsApi } from '../utils/api'
+import { patientsApi, appointmentsApi } from '../utils/api'
 
 function PatientScreen({ route, navigation }) {
   const { patient } = route.params
   const [appointments, setAppointments] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
-  const goToAddAppointment = () => navigation.navigate('AddAppointment')
+  const goToAddAppointment = () =>
+    navigation.navigate('AddAppointment', { patient })
 
   useEffect(() => {
     patientsApi
@@ -22,9 +30,42 @@ function PatientScreen({ route, navigation }) {
       .catch((err) => {
         console.log(err)
       })
-
-    setIsLoading(false)
+      .finally(() => {
+        setIsLoading(false)
+      })
   }, [])
+
+  const renderAppointments = ({ item }) => (
+    <AppointmentCard>
+      <MoreButton>
+        <TouchableOpacity>
+          <Ionicons name="md-more" size={24} color="rgba(0, 0, 0, 0.4)" />
+        </TouchableOpacity>
+      </MoreButton>
+      <AppointmentCardRow>
+        <Ionicons name="md-medical" size={24} color="#a3a3a3" />
+        <AppointmentCardLabel>
+          Зуб: <Text style={{ fontWeight: 'bold' }}>{item.dent_number}</Text>
+        </AppointmentCardLabel>
+      </AppointmentCardRow>
+      <AppointmentCardRow>
+        <Foundation name="clipboard-notes" size={24} color="#a3a3a3" />
+        <AppointmentCardLabel>
+          Диагноз: <Text style={{ fontWeight: 'bold' }}>{item.diagnosis}</Text>
+        </AppointmentCardLabel>
+      </AppointmentCardRow>
+      <AppointmentCardRow
+        style={{ marginTop: 15, justifyContent: 'space-between' }}
+      >
+        <Badge style={{ flex: 1 }} active>
+          {item.date} - {item.time}
+        </Badge>
+        <Badge style={{ marginLeft: 50 }} color="green">
+          {item.price} P
+        </Badge>
+      </AppointmentCardRow>
+    </AppointmentCard>
+  )
 
   return (
     <View style={{ flex: 1 }}>
@@ -52,49 +93,12 @@ function PatientScreen({ route, navigation }) {
           {isLoading ? (
             <ActivityIndicator size="large" color="#2a86ff" />
           ) : (
-            appointments.map((appointment) => (
-              <AppointmentCard key={appointment._id}>
-                <MoreButton>
-                  <Ionicons
-                    name="md-more"
-                    size={24}
-                    color="rgba(0, 0, 0, 0.4)"
-                  />
-                </MoreButton>
-                <AppointmentCardRow>
-                  <Ionicons name="md-medical" size={24} color="#a3a3a3" />
-                  <AppointmentCardLabel>
-                    Зуб:{' '}
-                    <Text style={{ fontWeight: 'bold' }}>
-                      {appointment.dent_number}
-                    </Text>
-                  </AppointmentCardLabel>
-                </AppointmentCardRow>
-                <AppointmentCardRow>
-                  <Foundation
-                    name="clipboard-notes"
-                    size={24}
-                    color="#a3a3a3"
-                  />
-                  <AppointmentCardLabel>
-                    Диагноз:{' '}
-                    <Text style={{ fontWeight: 'bold' }}>
-                      {appointment.diagnosis}
-                    </Text>
-                  </AppointmentCardLabel>
-                </AppointmentCardRow>
-                <AppointmentCardRow
-                  style={{ marginTop: 15, justifyContent: 'space-between' }}
-                >
-                  <Badge style={{ flex: 1 }} active>
-                    {appointment.date} - {appointment.time}
-                  </Badge>
-                  <Badge style={{ marginLeft: 50 }} color="green">
-                    {appointment.price} P
-                  </Badge>
-                </AppointmentCardRow>
-              </AppointmentCard>
-            ))
+            <FlatList
+              data={appointments}
+              renderItem={renderAppointments}
+              keyExtractor={(item) => item._id}
+              showsVerticalScrollIndicator={false}
+            />
           )}
         </AppointmentCardContainer>
       </PatientAppointments>

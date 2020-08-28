@@ -23,7 +23,9 @@ const HomeScreen = ({ route, navigation }) => {
       .catch((err) => {
         console.log(err)
       })
-    setIsLoading(false)
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   useEffect(() => {
@@ -48,7 +50,9 @@ const HomeScreen = ({ route, navigation }) => {
             .catch((err) => {
               console.log(err)
             })
-          setIsLoading(false)
+            .finally(() => {
+              setIsLoading(false)
+            })
         },
       },
     ])
